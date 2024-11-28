@@ -1,0 +1,3 @@
+# Javascript shit
+docker/js/node_modules/*
+docker/js/package-lock.json

@@ -1,5 +1,8 @@
-FROM mode:alpine
+FROM node:alpine
 WORKDIR /usr/src/app
-COPY prog.js./
+COPY js/ ./
+
+RUN npm install express
 ENV VAR=""
-CMD["node", "prog.js", "$VAR"]
+
+CMD ["node", "test.js"]

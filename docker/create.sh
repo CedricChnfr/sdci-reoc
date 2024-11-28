@@ -1,0 +1,1 @@
+docker build -t reoc:gateway -f gateway.dockerfile .
