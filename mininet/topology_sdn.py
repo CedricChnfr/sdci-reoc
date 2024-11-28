@@ -1,46 +1,47 @@
 from mininet.net import Containernet
-from mininet.node import Controller, RemoteController, DockerHost
+from mininet.node import Controller
 from mininet.link import TCLink
 
 def setup_topology():
     # Initialisation du réseau
-    net = Containernet(controller=RemoteController)
-    
-    # Ajout du contrôleur SDN (Ryu)
-    controller = net.addController('c0', controller=RemoteController, ip='127.0.0.1', port=6633)
+    net = Containernet(controller=Controller)
 
     # Création des switches
-    s1 = net.addSwitch('s1')  # Switch pour Z1
-    s2 = net.addSwitch('s2')  # Switch pour Z2
-    s3 = net.addSwitch('s3')  # Switch pour Z3
-    s4 = net.addSwitch('s4')  # Switch central (Ordon vers GI)
+    s1 = net.addSwitch('s1')    # Switch pour Z1, Z2 & Z3
+    s2 = net.addSwitch('s2')    # Switch pour GI et DC
+    s3 = net.addSwitch('s3')    # Switch pour le serveur
 
     # Création des hôtes (Z1, Z2, Z3)
-    z1 = net.addDockerHost('z1', ip='10.0.0.1', dimage="host_python")
-    z2 = net.addDockerHost('z2', ip='10.0.0.2', dimage="host_python")
-    z3 = net.addDockerHost('z3', ip='10.0.0.3', dimage="host_python")
+    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="ubuntu:latest")
+    z2 = net.addDocker('z2', ip='10.0.0.2', dimage="ubuntu:latest")
+    z3 = net.addDocker('z3', ip='10.0.0.3', dimage="ubuntu:latest")
     
     # Création d'Ordon et de la passerelle GI
-    ordon = net.addDockerHost('ordon', ip='10.0.0.100', dimage="vnf_python")
-    gi = net.addDockerHost('gi', ip='10.0.0.254', dimage="vnf_python")
+    ordonnanceur = net.addDocker('ordon', ip='10.0.0.100', dimage="ubuntu:latest")
+    gateway_init = net.addDocker('gi', ip='10.0.0.254', dimage="ubuntu:latest")
 
-    # Connexion des hôtes aux switches
-    net.addLink(z1, s1, cls=TCLink)
-    net.addLink(z2, s2, cls=TCLink)
-    net.addLink(z3, s3, cls=TCLink)
+    # Création d'un serveur
+    serveur = net.addDocker('serveur', ip='10.0.0.200', dimage="ubuntu:latest")
 
-    # Connexion des switches à Ordon et GI
-    net.addLink(s1, s4, cls=TCLink)
-    net.addLink(s2, s4, cls=TCLink)
-    net.addLink(s3, s4, cls=TCLink)
-    net.addLink(s4, ordon, cls=TCLink)
-    net.addLink(ordon, gi, cls=TCLink)
+    # Connexion des hôtes au s1
+    net.addLink(s1, z1)
+    net.addLink(s1, z2)
+    net.addLink(s1, z3)
+
+    # Connexion de Ordonnanceur, Gateway et s1 au s2
+    net.addLink(s2, s1, intfName1='s2-s1', intfName2='s1-s2')
+    net.addLink(s2, ordonnanceur)
+    net.addLink(s2, gateway_init)
+    
+    # Connexion de s2 et serveur au s3
+    net.addLink(s3, s2, intfName1='s3-s2', intfName2='s2-s3')
+    net.addLink(s3, serveur)
 
     # Lancer le réseau
     net.start()
-    print("Topology is running.")
-    net.pingAll()
-    net.stop()
+    # net.CLI()   # Lancer la CLI de Mininet pour interagir avec le réseau
+    net.stop()  # Arrêter le réseau après l'utilisation
 
+# Fonction principale pour démarrer le réseau
 if __name__ == '__main__':
     setup_topology()
