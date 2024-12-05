@@ -1,6 +1,7 @@
 from mininet.net import Containernet
 from mininet.node import Controller
 from mininet.link import TCLink
+from mininet.cli import CLI
 
 def setup_topology():
     # Initialisation du réseau
@@ -12,16 +13,16 @@ def setup_topology():
     s3 = net.addSwitch('s3')    # Switch pour le serveur
 
     # Création des hôtes (Z1, Z2, Z3)
-    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="ubuntu:latest")
-    z2 = net.addDocker('z2', ip='10.0.0.2', dimage="ubuntu:latest")
-    z3 = net.addDocker('z3', ip='10.0.0.3', dimage="ubuntu:latest")
+    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:test")
+    z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:test")
+    z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:test")
     
     # Création d'Ordon et de la passerelle GI
-    ordonnanceur = net.addDocker('ordon', ip='10.0.0.100', dimage="ubuntu:latest")
-    gateway_init = net.addDocker('gi', ip='10.0.0.254', dimage="ubuntu:latest")
+    ordonnanceur = net.addDocker('ordon', ip='10.0.0.100', dimage="reoc:test")
+    gateway_init = net.addDocker('gi', ip='10.0.0.254', dimage="reoc:test")
 
     # Création d'un serveur
-    serveur = net.addDocker('serveur', ip='10.0.0.200', dimage="ubuntu:latest")
+    serveur = net.addDocker('serveur', ip='10.0.0.200', dimage="reoc:test")
 
     # Connexion des hôtes au s1
     net.addLink(s1, z1)
@@ -39,7 +40,7 @@ def setup_topology():
 
     # Lancer le réseau
     net.start()
-    # net.CLI()   # Lancer la CLI de Mininet pour interagir avec le réseau
+    CLI(net)  # Lancer la CLI de Mininet pour interagir avec le réseau
     net.stop()  # Arrêter le réseau après l'utilisation
 
 # Fonction principale pour démarrer le réseau

@@ -7,7 +7,7 @@ Software Defined Communication Infrastructure
 > For VIM-EMU instances on the data center we will use a specific **Xenial** instance with the help of this [requirement](https://github.com/containernet/vim-emu/wiki/Container-Requirements).
 
 ```bash
-docker build . -t mondocker:latest
+docker build . --file <filename> -t mondocker:latest
 docker run -env VAR=... -i mondocker:latest
 ```
 
@@ -25,6 +25,8 @@ npm list express
 ```
 
 ## Monitoring
+
+General Controler qui fonctionne avec une API rest, qui communique avce le SDN Controller et Vim-Emu. 
 
 nodejs
 vim emu
