@@ -1,11 +1,28 @@
 from mininet.net import Containernet
 from mininet.node import Controller
-from mininet.link import TCLink
 from mininet.cli import CLI
+import logging
+from mininet.log import setLogLevel
+from emuvim.dcemulator.net import DCNetwork
+from emuvim.api.rest.rest_api_endpoint import RestApiEndpoint
+from emuvim.api.openstack.openstack_api_endpoint import OpenstackApiEndpoint
+
+logging.basicConfig(level=logging.INFO)
+setLogLevel('info')  # set Mininet loglevel
+logging.getLogger('werkzeug').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.base').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.compute').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.keystone').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.nova').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.neutron').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.heat').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.heat.parser').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.glance').setLevel(logging.DEBUG)
+logging.getLogger('api.openstack.helper').setLevel(logging.DEBUG)
 
 def setup_topology():
     # Initialisation du réseau
-    net = Containernet(controller=Controller)
+    net = DCNetwork(monitor=False, enable_learning=True)
 
     # Création des switches
     s1 = net.addSwitch('s1')    # Switch pour Z1, Z2 & Z3
@@ -13,7 +30,7 @@ def setup_topology():
     s3 = net.addSwitch('s3')    # Switch pour le serveur
 
     # Création des hôtes (Z1, Z2, Z3)
-    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:test")
+    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:burst")
     z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:test")
     z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:test")
     
@@ -40,7 +57,7 @@ def setup_topology():
 
     # Lancer le réseau
     net.start()
-    CLI(net)  # Lancer la CLI de Mininet pour interagir avec le réseau
+    net.CLI()   # Lancer la CLI de Mininet pour interagir avec le réseau
     net.stop()  # Arrêter le réseau après l'utilisation
 
 # Fonction principale pour démarrer le réseau

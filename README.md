@@ -9,6 +9,7 @@ Software Defined Communication Infrastructure
 ```bash
 docker build . --file <filename> -t mondocker:latest
 docker run -env VAR=... -i mondocker:latest
+docker exec -it <instance> bash
 ```
 
 We will need to create separated containers in our topology with the following scripts:
@@ -27,6 +28,18 @@ npm list express
 ## Monitoring
 
 General Controler qui fonctionne avec une API rest, qui communique avce le SDN Controller et Vim-Emu. 
+
+```
+curl http://127.0.0.1:8080/stats/port/1
+```
+
+Menu contoller: 
+    1/ provoquer incident (API Docker) (lancer un second device par ex.)
+    2/ Démarrer monitoring (API Ryu) (tx_bytes, port_no=4)
+    3/ arrêter le monintoring
+    4/ Activer Ordonnanceur (API VIM-EMU pour lancer la VNF, Ryu pour les redirections)
+    5/ Désactiver
+    6/ Mode Auto (démarre monitoring -> vérifie si un seuil est dépassé : active l'use case)
 
 nodejs
 vim emu
