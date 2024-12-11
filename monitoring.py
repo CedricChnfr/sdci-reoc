@@ -2,6 +2,10 @@
 import requests
 import threading
 
+port_choices = ["Local", "Output", "Z1", "Z2", "Z3"]
+thread = None
+stop_thread_val = 0
+
 # Fonction pour récupérer les statistiques de port
 def get_port_stats(port_no):
     try:
@@ -15,27 +19,33 @@ def get_port_stats(port_no):
         return f"Error: {e}"
 
 def thread_monitor(wpc, wd, f):
-    while 1:
+    global stop_thread_val
+    while not stop_thread_val:
         port_no = wpc.value[0]
         port_stats = get_port_stats(port_no)
         if isinstance(port_stats, dict):
+            wd.name = f"{port_choices[port_no]} Statistics:"
             wd.values = [
-                f"Port {port_no + 1} Statistics:",
                 "",
-                f"  packet_reçu: {port_stats['rx_packets']}",
-                f"  packet_envoyé: {port_stats['tx_packets']}",
-                f"  octets_reçu: {port_stats['rx_bytes']}",
-                f"  octets_envoyé: {port_stats['tx_bytes']}",
-                f"  paquet_perdu_reçu: {port_stats['rx_dropped']}",
-                f"  paquet_perdu_envoyé: {port_stats['tx_dropped']}",
-                f"  erreurs_reçu: {port_stats['rx_errors']}",
-                f"  erreurs_envoyé: {port_stats['tx_errors']}"
+                f"  RX Packets: {port_stats['rx_packets']} ({port_stats['rx_bytes']} bytes)",
+                f"  TX Packets: {port_stats['tx_packets']} ({port_stats['tx_bytes']} bytes)",
+                f"  Lost Packets: {port_stats['tx_dropped']}",
+                f"  Error Packets: {port_stats['tx_errors']}"
             ]
         else:
             wd.values = [port_stats]
         f.display()
 
 def update_port(widget_port_choice, widget_debug, form):
+    global thread
     if len(widget_port_choice.value) > 0:
-        thread = threading.Thread(target=thread_monitor, args=(widget_port_choice, widget_debug, form))
-        thread.start()
+            if thread is None or not thread.is_alive():
+                thread = threading.Thread(target=thread_monitor, args=(widget_port_choice, widget_debug, form))
+                thread.start()
+
+def stop_thread():
+    global stop_thread_val
+    global thread
+    stop_thread_val = 1
+    thread.join()
+

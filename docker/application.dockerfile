@@ -9,7 +9,8 @@ RUN apk add --update --no-cache \
         iperf \
         busybox-extras \
         iproute2 \
-        iputils
+        iputils \
+        python3
 ENV VAR=""
 
 # CMD ["/bin/sh"]

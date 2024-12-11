@@ -1,6 +1,7 @@
 FROM node:alpine
 WORKDIR /usr/src/app
 COPY js/ ./
+COPY python/ ./
 
 RUN npm install express
 RUN apk add --update --no-cache \
@@ -9,7 +10,8 @@ RUN apk add --update --no-cache \
         iperf \
         busybox-extras \
         iproute2 \
-        iputils
+        iputils \
+        python3
 ENV VAR=""
 
 # CMD ["/bin/sh"]

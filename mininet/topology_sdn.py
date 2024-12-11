@@ -29,7 +29,15 @@ def setup_topology():
     s2 = net.addSwitch('s2')    # Switch pour GI et DC
     s3 = net.addSwitch('s3')    # Switch pour le serveur
 
-    # Création des hôtes (Z1, Z2, Z3)
+    """
+    Création des hôtes (Z1, Z2, Z3)
+    ---
+    On considère que chacun des hôtes est directement un device.
+    En effet, normalement chaque "zone" est composé d'une gateway
+    et de plusieurs devices.
+    Mais il est possible de simuler plusieurs device simplement
+    en augmentant le débit directemtn de l'image reoc:device
+    """
     z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:device")
     z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:device")
     z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:device")
@@ -75,6 +83,5 @@ def setup_topology():
     net.CLI()   # Lancer la CLI de Mininet pour interagir avec le réseau
     net.stop()  # Arrêter le réseau après l'utilisation
 
-# Fonction principale pour démarrer le réseau
 if __name__ == '__main__':
     setup_topology()
