@@ -41,5 +41,17 @@ Menu contoller:
     5/ Désactiver
     6/ Mode Auto (démarre monitoring -> vérifie si un seuil est dépassé : active l'use case)
 
+Il existe plusieurs commande dans `containernet` pour observer la topologie:
+```
+links
+sh ovs-vsctl show
+sh ovs-vsctl get Bridge s1 datapath_id
+```
+
+Nous en avons déduit que chaque port était associé au suivant: 
+- 3 (port 1): Z1
+- 4 (port 2): Z2
+- 5 (port 3): Z3
+
 nodejs
 vim emu

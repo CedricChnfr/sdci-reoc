@@ -1,3 +1,8 @@
-docker build -t reoc:gateway -f gateway.dockerfile .
-docker build -t reoc:test -f test.dockerfile .
-docker build -t reoc:burst -f burst.dockerfile .
+#!/bin/bash
+
+for dockerfile in *.dockerfile; do
+    image_tag="reoc:$(basename "$dockerfile" .dockerfile)"
+    
+    echo "Building image: $image_tag from $dockerfile"
+    docker build -t "$image_tag" -f "$dockerfile" .
+done

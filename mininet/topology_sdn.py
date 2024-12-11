@@ -30,16 +30,16 @@ def setup_topology():
     s3 = net.addSwitch('s3')    # Switch pour le serveur
 
     # Création des hôtes (Z1, Z2, Z3)
-    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:burst")
-    z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:test")
-    z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:test")
+    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:device")
+    z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:device")
+    z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:device")
     
     # Création d'Ordon et de la passerelle GI
     ordonnanceur = net.addDocker('ordon', ip='10.0.0.100', dimage="reoc:test")
-    gateway_init = net.addDocker('gi', ip='10.0.0.254', dimage="reoc:test")
+    gateway_inter = net.addDocker('gi', ip='10.0.0.254', dimage="reoc:gateway")
 
     # Création d'un serveur
-    serveur = net.addDocker('serveur', ip='10.0.0.200', dimage="reoc:test")
+    serveur = net.addDocker('serveur', ip='10.0.0.200', dimage="reoc:server")
 
     # Connexion des hôtes au s1
     net.addLink(s1, z1)
@@ -49,7 +49,7 @@ def setup_topology():
     # Connexion de Ordonnanceur, Gateway et s1 au s2
     net.addLink(s2, s1, intfName1='s2-s1', intfName2='s1-s2')
     net.addLink(s2, ordonnanceur)
-    net.addLink(s2, gateway_init)
+    net.addLink(s2, gateway_inter)
     
     # Connexion de s2 et serveur au s3
     net.addLink(s3, s2, intfName1='s3-s2', intfName2='s2-s3')
