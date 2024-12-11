@@ -1,3 +1,6 @@
 # Javascript shit
 docker/js/node_modules/*
 docker/js/package-lock.json
+
+# Python chad temp files
+__pycache__/**
