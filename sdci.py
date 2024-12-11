@@ -1,63 +1,55 @@
 import curses
-from enum import Enum
-from typing import Tuple
+import sys
+import npyscreen
+npyscreen.disableColor()
 
-menu = ["Monitoring", "Adaptation", "Topologie", "Mode auto."]
-row = 0
-color = 1
+def main():
+    app = App()
+    app.run()
 
-class Action(Enum):
-    NONE = 0
-    SELECT = 1
-    QUIT = 2
+class App(npyscreen.NPSApp):
+    def main(self):
+        global i
+        # Create the form and get terminal size
+        form = npyscreen.FormBaseNew(name="SDCI Controller")
+        stdscr = curses.initscr()  # Initialize curses screen once
+        column_height = stdscr.getmaxyx()[0] - 4
+        choices = ["Monitoring", "Adaptation", "Topologie", "Mode auto."]
+        
+        # Create widgets (column for choice and debug)
+        widget_choice = form.add(
+            npyscreen.SelectOne,
+            name="CHOICE",
+            relx=2,
+            rely=2,
+            max_width=20,
+            max_height=column_height,
+            values=choices
+        )
 
-def user_input(stdscr, action)-> Tuple[Action, int]:
-    # Get user input
-    key = stdscr.getch()
-    global row
+        widget_debug = form.add(
+            npyscreen.BoxTitle,
+            name="DEBUG",
+            relx=23,
+            rely=2,
+            max_height=column_height,
+        )
+        
+        # Define the event handler for when the user selects a choice
+        def update(*args, **kwargs):
+            if len(widget_choice.value) > 0:
+                widget_debug.values = [f"You choose {choices[widget_choice.value[0]]}"];
+            form.display()  # Redraw the form with the updated debug box
 
-    if action == Action.NONE:
-        if key == curses.KEY_UP and row > 0:
-            row -= 1
-        elif key == curses.KEY_DOWN and row < len(menu) - 1:
-            row += 1
-        # ENTER key
-        elif key in [10, 13]:
-            return Action.SELECT, row
-    
-    # ESCAPE Key
-    if key == 27:
-        return Action.QUIT, 0
-    
-    return action, row
+        # Set max height of widget_choice
+        widget_choice.when_value_edited = update
 
-def display(stdscr):
-    global row, color
+        form.edit()
 
-    # Display menu
-    for id, item in enumerate(menu):
-        if id == row:
-            stdscr.addstr(item+"\n", curses.color_pair(color))
-        else:
-            stdscr.addstr(item+"\n")
-    stdscr.refresh()
 
-def main(stdscr):
-    curses.curs_set(0)
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
-    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_GREEN)
-    global color
-    action = Action.NONE
+class ExitButton(npyscreen.ButtonPress):
+    def whenPressed(self):
+        sys.exit(0)  # Gracefully exit the application
 
-    while True:
-        stdscr.clear()
-        display(stdscr)
-        newaction, value = user_input(stdscr, action)
-        action = newaction
-        if action == Action.QUIT:
-            break
-        elif action == Action.SELECT:
-            color = 2
-
-curses.wrapper(main)
+if __name__ == "__main__":
+    main()
