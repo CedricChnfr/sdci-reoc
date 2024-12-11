@@ -55,6 +55,21 @@ def setup_topology():
     net.addLink(s3, s2, intfName1='s3-s2', intfName2='s2-s3')
     net.addLink(s3, serveur)
 
+    # Ajouter un datacenter émulé
+    dc1 = net.addDatacenter("dc1")
+
+    # Ajouter des API similaires à OpenStack au datacenter émulé
+    api1 = OpenstackApiEndpoint("0.0.0.0", 6001)
+    api1.connect_datacenter(dc1)
+    api1.start()
+    api1.connect_dc_network(net)
+
+    # Ajouter une interface de ligne de commande REST au datacenter émulé
+    rapi1 = RestApiEndpoint("0.0.0.0", 5001)
+    rapi1.connectDCNetwork(net)
+    rapi1.connectDatacenter(dc1)
+    rapi1.start()
+
     # Lancer le réseau
     net.start()
     net.CLI()   # Lancer la CLI de Mininet pour interagir avec le réseau
