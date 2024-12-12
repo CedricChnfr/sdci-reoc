@@ -1,6 +1,11 @@
 # sdci-reoc
 Software Defined Communication Infrastructure
 
+Launch this command before launching `sdci.py`:
+```bash
+pip install -r requirements.txt
+```
+
 ## Topology
 
 > Using a Docker container with only **Alpine** and **Nodejs**.
