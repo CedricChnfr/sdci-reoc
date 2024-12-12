@@ -4,7 +4,6 @@ import subprocess
 import psutil
 
 import monitoring
-from adaptation import update_adaptation 
 
 npyscreen.disableColor()
 def main():
