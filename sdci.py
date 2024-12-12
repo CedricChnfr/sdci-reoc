@@ -23,6 +23,7 @@ class App(npyscreen.NPSApp):
             relx=2,
             rely=3,
             max_width=20,
+            max_height=7,
             values=choices,
         )
 
@@ -31,15 +32,25 @@ class App(npyscreen.NPSApp):
             name="PORT CHOICE",
             relx=26,
             rely=3,
+            max_height=7,
             values=port_choices,
             hidden=True
+        )
+
+        widget_topology = form.add(
+            npyscreen.BoxTitle,
+            name="TOPOLOGY",
+            relx=40,
+            rely=10,
+            max_height=12,
+            hidden=True,
         )
 
         widget_debug = form.add(
             npyscreen.BoxTitle,
             name="DEBUG",
             relx=40,
-            rely=10,
+            rely=22,
             editable=False,
         )
 
@@ -53,24 +64,24 @@ class App(npyscreen.NPSApp):
         )
 
         widget_packet_size = form.add(
-            npyscreen.TitleText,
+            npyscreen.BoxTitle,
             name="Packet Size:",
             relx=2,
             rely=10,
+            max_height=4,
+            max_width=30,
             hidden=True  
         )
 
         widget_packet_count = form.add(
-            npyscreen.TitleText,
+            npyscreen.BoxTitle,
             name="Packet Count:",
             relx=2,
-            rely=12,
+            rely=14,
+            max_height=4,
+            max_width=30,
             hidden=True  
         )
-
-        def clear_screen(widget, form):
-            widget.values = []
-            form.display()
 
         def update(*args, **kwargs):
             choice = widget_choice.value
@@ -87,12 +98,18 @@ class App(npyscreen.NPSApp):
             else:
                 widget_packet_size.hidden = True
                 widget_packet_count.hidden = True
-
-            if 0 not in choice:
-                monitoring.stop_thread()
-                widget_monitor.values = [""]
-
+                
             #2 -> Topologie
+            if 2 in choice:
+                content = []
+                with open('mininet/network_links.temp', 'r') as file:
+                    content = file.read().splitlines()
+                widget_topology.values = content
+                widget_topology.hidden = False
+            else:
+                widget_topology.hidden = True
+                widget_topology.values = []
+
             #3 -> Mode Auto.
 
             # Checking for any monitoring
