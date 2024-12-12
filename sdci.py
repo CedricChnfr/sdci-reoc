@@ -75,11 +75,12 @@ class App(npyscreen.NPSApp):
         def update(*args, **kwargs):
             choice = widget_choice.value
             # 0 -> Monitor
-            if 0 in choice or 1 in choice :
+            if 0 in choice :
                 widget_port_choice.hidden = False
             else:
                 widget_port_choice.hidden = True
 
+            #1 -> Adaptation
             if 1 in choice:
                 widget_packet_size.hidden = False
                 widget_packet_count.hidden = False
@@ -88,9 +89,9 @@ class App(npyscreen.NPSApp):
                 widget_packet_count.hidden = True
 
             if 0 not in choice:
-                clear_screen(widget_monitor, form)
+                monitoring.stop_thread()
+                widget_monitor.values = [""]
 
-            #1 -> Adaptation
             #2 -> Topologie
             #3 -> Mode Auto.
 

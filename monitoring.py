@@ -46,6 +46,10 @@ def update_port(widget_port_choice, widget_debug, form):
 def stop_thread():
     global stop_thread_val
     global thread
-    stop_thread_val = 1
-    thread.join()
+
+    if thread is not None:
+        if thread.is_alive():
+            stop_thread_val = 1
+            thread.join()
+            stop_thread_val = 0
 
