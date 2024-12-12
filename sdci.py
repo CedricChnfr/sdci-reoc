@@ -3,6 +3,7 @@ import sys
 import npyscreen
 
 import monitoring
+from adaptation import update_adaptation 
 
 npyscreen.disableColor()
 
@@ -51,13 +52,44 @@ class App(npyscreen.NPSApp):
             editable=False,
         )
 
+        widget_packet_size = form.add(
+            npyscreen.TitleText,
+            name="Packet Size:",
+            relx=2,
+            rely=10,
+            hidden=True  
+        )
+
+        widget_packet_count = form.add(
+            npyscreen.TitleText,
+            name="Packet Count:",
+            relx=2,
+            rely=12,
+            hidden=True  
+        )
+
+        def clear_screen(widget, form):
+            widget.values = []
+            form.display()
+
         def update(*args, **kwargs):
             choice = widget_choice.value
             # 0 -> Monitor
-            if 0 in choice:
+            if 0 in choice or 1 in choice :
                 widget_port_choice.hidden = False
-            if not 0 in choice:
+            else:
                 widget_port_choice.hidden = True
+
+            if 1 in choice:
+                widget_packet_size.hidden = False
+                widget_packet_count.hidden = False
+            else:
+                widget_packet_size.hidden = True
+                widget_packet_count.hidden = True
+
+            if 0 not in choice:
+                clear_screen(widget_monitor, form)
+
             #1 -> Adaptation
             #2 -> Topologie
             #3 -> Mode Auto.
@@ -74,6 +106,9 @@ class App(npyscreen.NPSApp):
 
         widget_choice.when_value_edited = update
         widget_port_choice.when_value_edited = lambda *args, **kwargs: monitoring.update_port(widget_port_choice, widget_monitor, form)
+        widget_packet_size.when_value_edited = lambda *args, **kwargs: update_adaptation(widget_port_choice, widget_packet_size, widget_packet_count, widget_debug, form)
+        widget_packet_count.when_value_edited = lambda *args, **kwargs: update_adaptation(widget_port_choice, widget_packet_size, widget_packet_count, widget_debug, form)
+
 
         form.edit()
 
