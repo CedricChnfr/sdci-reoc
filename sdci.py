@@ -1,11 +1,11 @@
 import curses
-import sys
 import npyscreen
+import subprocess
+import psutil
 
 import monitoring
 
 npyscreen.disableColor()
-
 def main():
     app = App()
     app.run()
@@ -61,6 +61,10 @@ class App(npyscreen.NPSApp):
             #1 -> Adaptation
             #2 -> Topologie
             #3 -> Mode Auto.
+
+            # Checking for any monitoring
+            if not is_process_running("topology_sdn.py") and len(choice)>0:
+                widget_debug.values=["Error: topology_sdn.py is not running."]
             form.display()
 
         quit_handlers = {
@@ -81,5 +85,20 @@ class App(npyscreen.NPSApp):
         monitoring.stop_thread()
         exit(0)
 
+def is_process_running(process_name):
+    for process in psutil.process_iter(['name', 'cmdline']):
+        try:
+            if process_name in process.info['name'] or process_name in ' '.join(process.info['cmdline']):
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
 if __name__ == "__main__":
+    if not is_process_running("topology_sdn.py"):
+        print("Warning: Topology SDN is not launched.")
+        result = subprocess.run(["bash", "docker/clear.sh"], check=True, text=True, capture_output=True)
+        print(result.stdout)
+        result = subprocess.run(["bash", "docker/create.sh"], check=True, text=True, capture_output=True)
+        print(result.stdout)
     main()

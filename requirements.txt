@@ -1,1 +1,3 @@
 npyscreen
+psutil
+subprocess
