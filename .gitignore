@@ -5,3 +5,4 @@ docker/js/package-lock.json
 # Python chad temp files
 **/__pycache__
 *.temp
+*.tmp

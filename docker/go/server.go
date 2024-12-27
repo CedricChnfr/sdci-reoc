@@ -97,10 +97,26 @@ func getPacket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getPacketData(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var jsonData = make(map[string]int)
+	jsonData["count"] = len(dataList)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(jsonData); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func main() {
 	http.HandleFunc("/post_data", postDataHandler)
 	http.HandleFunc("/get_data", getDataHandler)
 	http.HandleFunc("/get_packet", getPacket)
+	http.HandleFunc("/get_packet_data", getPacketData)
 	if err := http.ListenAndServe(":7070", nil); err != nil {
 		fmt.Println("Could not start the server:", err)
 	}
