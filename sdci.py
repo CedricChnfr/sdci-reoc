@@ -53,6 +53,16 @@ class App(npyscreen.NPSApp):
             editable=False,
         )
 
+        widget_topology = form.add(
+            npyscreen.BoxTitle,
+            name="TOPOLOGY",
+            relx=40,
+            rely=10,
+            max_height=12,
+            hidden=True,
+        )
+
+
         def update(*args, **kwargs):
             choice = widget_choice.value
             # 0 -> Monitor
@@ -79,7 +89,6 @@ class App(npyscreen.NPSApp):
             else:
                 widget_topology.hidden = True
                 widget_topology.values = []
-
             #3 -> Mode Auto.
 
             # Checking for any monitoring
