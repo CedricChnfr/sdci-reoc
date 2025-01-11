@@ -10,6 +10,7 @@ RUN apk add --update --no-cache \
         busybox-extras \
         iproute2 \
         iputils \
+        iperf3 \
         python3
 ENV VAR=""
 

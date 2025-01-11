@@ -39,18 +39,23 @@ curl http://127.0.0.1:8080/stats/port/1
 ```
 
 Menu contoller: 
-    1/ provoquer incident (API Docker) (lancer un second device par ex.)
-    2/ Démarrer monitoring (API Ryu) (tx_bytes, port_no=4)
-    3/ arrêter le monintoring
-    4/ Activer Ordonnanceur (API VIM-EMU pour lancer la VNF, Ryu pour les redirections)
-    5/ Désactiver
-    6/ Mode Auto (démarre monitoring -> vérifie si un seuil est dépassé : active l'use case)
+1. Provoquer un incident (API Docker) (lancer un second device par ex.)
+2. Démarrer le monitoring (API Ryu) (tx_bytes, port_no=4)
+3. Arrêter le monintoring
+4. Activer l'Ordonnanceur (API VIM-EMU pour lancer la VNF, Ryu pour les redirections)
+5. Désactiver
+6. Mode Auto (démarre monitoring -> vérifie si un seuil est dépassé : active l'use case)
 
 Il existe plusieurs commande dans `containernet` pour observer la topologie:
 ```
 links
 sh ovs-vsctl show
 sh ovs-vsctl get Bridge s1 datapath_id
+```
+
+Observer les flow crées avec l'API de ryu:
+```
+curl http://localhost:8080/stats/flow/1
 ```
 
 Nous en avons déduit que chaque port était associé au suivant: 

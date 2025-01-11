@@ -1,0 +1,17 @@
+{
+  "dpid": 1,
+  "priority": 100,
+  "match": {
+    "in_port": 1
+  },
+  "actions": [
+    {
+      "type": "SET_QUEUE",
+      "queue_id": 1
+    },
+    {
+      "type": "OUTPUT",
+      "port": 4
+    }
+  ]
+}

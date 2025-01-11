@@ -6,6 +6,7 @@ RUN apk add --update --no-cache \
         iperf \
         busybox-extras \
         iproute2 \
+        iperf3 \
         iputils
 
 CMD ["/bin/bash"]

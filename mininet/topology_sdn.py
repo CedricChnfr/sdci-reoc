@@ -41,7 +41,7 @@ def setup_topology():
     """
     z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:device", dcmd="node device.js --local_ip '10.0.0.1' --local_port 9001 --local_name 'dev1' --remote_ip '127.0.0.1' --remote_port 8282 --remote_name 'g1' --send_period 3000")
     """
-    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:device", dcmd="python3 burst.py")
+    z1 = net.addDocker('z1', ip='10.0.0.1', dimage="reoc:device")
     z2 = net.addDocker('z2', ip='10.0.0.2', dimage="reoc:device")
     z3 = net.addDocker('z3', ip='10.0.0.3', dimage="reoc:device")
     
