@@ -1,61 +1,57 @@
 import requests
-# docker exec -it mn.z1 bash
-# Add a meter entry to limit the flow to 2 bytes per second
-meter_url = "http://127.0.0.1:8080/stats/meterentry/add"
-meter_data = {
-    "dpid": 1,
-    "meter_id": 1,
-    "flags": "KBPS",
-    "bands": [
-        {
-            "type": "DROP",
-            "rate": 2  # 2 bytes per second
-        }
-    ]
-}
-meter_headers = {
-    "Content-Type": "application/json"
-}
 
-meter_response = requests.post(meter_url, json=meter_data, headers=meter_headers)
+# Function to add a flow entry
+def add_flow_entry(flow_data):
+    flow_url = "http://127.0.0.1:8080/stats/flowentry/add"
+    flow_headers = {
+        "Content-Type": "application/json"
+    }
 
-if meter_response.status_code == 200:
-    print("Meter entry was successful")
-else:
-    print(f"Failed to add meter entry: {meter_response.status_code}")
+    flow_response = requests.post(flow_url, json=flow_data, headers=flow_headers)
 
-# Add a flow entry to use the meter
-flow_url = "http://127.0.0.1:8080/stats/flowentry/add"
-flow_data = {
+    if flow_response.status_code == 200:
+        print("Flow entry was successful")
+    else:
+        print(f"Failed to add flow entry: {flow_response.status_code}")
+
+# Drop flow in zone 2
+flow_data_zone_2 = {
     "dpid": 1,
     "table_id": 0,
     "priority": 1,
     "match": {
-        "in_port": 1
+        "in_port": 2
     },
     "instructions": [
-        {
-            "type": "METER",
-            "meter_id": 1
-        },
         {
             "type": "APPLY_ACTIONS",
             "actions": [
                 {
-                    "type": "OUTPUT",
-                    "port": 2
+                    "type": "DROP"
                 }
             ]
         }
     ]
 }
-flow_headers = {
-    "Content-Type": "application/json"
+add_flow_entry(flow_data_zone_2)
+
+# Drop flow in zone 3
+flow_data_zone_3 = {
+    "dpid": 1,
+    "table_id": 0,
+    "priority": 1,
+    "match": {
+        "in_port": 3
+    },
+    "instructions": [
+        {
+            "type": "APPLY_ACTIONS",
+            "actions": [
+                {
+                    "type": "DROP"
+                }
+            ]
+        }
+    ]
 }
-
-flow_response = requests.post(flow_url, json=flow_data, headers=flow_headers)
-
-if flow_response.status_code == 200:
-    print("Flow entry was successful")
-else:
-    print(f"Failed to add flow entry: {flow_response.status_code}")
+add_flow_entry(flow_data_zone_3)

@@ -1,11 +1,11 @@
-import curses
-import npyscreen
 import subprocess
 import psutil
-
+import curses
+import npyscreen
 import monitoring
 
 npyscreen.disableColor()
+
 def main():
     app = App()
     app.run()
@@ -36,15 +36,6 @@ class App(npyscreen.NPSApp):
             hidden=True
         )
 
-        widget_topology = form.add(
-            npyscreen.BoxTitle,
-            name="TOPOLOGY",
-            relx=40,
-            rely=10,
-            max_height=12,
-            hidden=True,
-        )
-
         widget_debug = form.add(
             npyscreen.BoxTitle,
             name="DEBUG",
@@ -62,26 +53,6 @@ class App(npyscreen.NPSApp):
             editable=False,
         )
 
-        widget_packet_size = form.add(
-            npyscreen.BoxTitle,
-            name="Packet Size:",
-            relx=2,
-            rely=10,
-            max_height=4,
-            max_width=30,
-            hidden=True  
-        )
-
-        widget_packet_count = form.add(
-            npyscreen.BoxTitle,
-            name="Packet Count:",
-            relx=2,
-            rely=14,
-            max_height=4,
-            max_width=30,
-            hidden=True  
-        )
-
         def update(*args, **kwargs):
             choice = widget_choice.value
             # 0 -> Monitor
@@ -92,12 +63,12 @@ class App(npyscreen.NPSApp):
 
             #1 -> Adaptation
             if 1 in choice:
-                widget_packet_size.hidden = False
-                widget_packet_count.hidden = False
-            else:
-                widget_packet_size.hidden = True
-                widget_packet_count.hidden = True
-                
+                call_adaptation_script()  # Call the adaptation script
+
+            if 0 not in choice:
+                monitoring.stop_thread()
+                widget_monitor.values = [""]
+
             #2 -> Topologie
             if 2 in choice:
                 content = []
@@ -116,6 +87,14 @@ class App(npyscreen.NPSApp):
                 widget_debug.values=["Error: topology_sdn.py is not running."]
             form.display()
 
+        def call_adaptation_script():
+            result = subprocess.run(["python3", "adaptation.py"], capture_output=True, text=True)
+            if result.returncode == 0:
+                widget_debug.values = ["Adaptation script executed successfully."]
+            else:
+                widget_debug.values = [f"Error executing adaptation script: {result.stderr}"]
+            form.display()
+
         quit_handlers = {
             "^Q": self.exit_func,
             "^C": self.exit_func,
@@ -127,9 +106,6 @@ class App(npyscreen.NPSApp):
 
         widget_choice.when_value_edited = update
         widget_port_choice.when_value_edited = lambda *args, **kwargs: monitoring.update_port(widget_port_choice, widget_monitor, form)
-        widget_packet_size.when_value_edited = lambda *args, **kwargs: update_adaptation(widget_port_choice, widget_packet_size, widget_packet_count, widget_debug, form)
-        widget_packet_count.when_value_edited = lambda *args, **kwargs: update_adaptation(widget_port_choice, widget_packet_size, widget_packet_count, widget_debug, form)
-
 
         form.edit()
 
